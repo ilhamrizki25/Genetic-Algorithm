@@ -9,11 +9,11 @@ import java.text.DecimalFormat;
 
 class Genetic_Algorithm {
 
-  static int populationSize = 50; // can be set
-  static int maxGeneration = 100; // can be set to wahatever value you want
-  static int chromosomeSize = 6; // dont change this value, since the design of the chromosome not dynamic
-  static double probabilityCrossover = 0.7; // value 0.1 - 1.0
-  static double probabilityMutation = 0.32; // value 0.1 - 1.0
+  static int populationSize = 50;
+  static int maxGeneration = 100;
+  static int chromosomeSize = 6; // Dont change this, since the chromosome design not dynamic
+  static double probabilityCrossover = 0.80; // Range 0.1 to 1.0
+  static double probabilityMutation = 0.07; // Range 0.1 to 1.0
 
   static Random rand = new Random();
 
@@ -88,11 +88,11 @@ class Genetic_Algorithm {
     return -objective;
   }
 
-  // Calculate all fitness value for each gen in one generation
+  // Calculate all fitness value for each chromosome in one generation
   static double[] allFitness(double[][] population) {
     double[] allFitness = new double[population.length];
 
-    // Calculate all fitness value for each gen
+    // Calculate all fitness value for each chromosome
     for (int i = 0; i < population.length; i++) {
       allFitness[i] = fitness(objective(decodeReal(population[i])));
     }
@@ -100,7 +100,7 @@ class Genetic_Algorithm {
     return allFitness;
   }
 
-  // Parent selection with roulette wheel method
+  // Parent selection with roulette wheel selection method
   static double[][] rouletteWheel(double[][] population, double[] fitness) {
     double[] proportion = fitness.clone();
     double totalFitness = 0;
@@ -111,12 +111,12 @@ class Genetic_Algorithm {
       totalFitness += fit;
     }
 
-    // Calculate the value of proportion for each gen
+    // Calculate the value of proportion for each chromosome
     for (int i = 0; i < proportion.length; i++) {
       proportion[i] = fitness[i] / totalFitness;
     }
 
-    // Pick 6 gen using roullete wheel method
+    // Pick 10 chromosome using roullete wheel method
     for (int i = 0; i < parent.length; i++) {
       double random = rand.nextDouble();
       double total = 0;
@@ -131,13 +131,13 @@ class Genetic_Algorithm {
     return parent;
   }
 
-  // Parent selection with tournament method
+  // Parent selection with tournament selection method
   static double[][] tournament(double[][] population, double[] fitness) {
     double[][] temp = new double[4][];
     double[][] parent = new double[2][];
     double[] tempFitness = fitness.clone();
 
-    // select random candidate chromosome from population
+    // Select random candidate chromosome from population
     for (int k = 0; k < parent.length; k++) {
       for (int i = 0; i < temp.length; i++) {
         int random = rand.nextInt(population.length);
@@ -148,14 +148,14 @@ class Genetic_Algorithm {
       double bestFitness = tempFitness[0];
       int index = 0;
 
-      // select chromosome with the best fitness value from the candidate chromosome
+      // Select chromosome with the best fitness value from the candidate chromosome
       for (int j = 0; j < temp.length; j++) {
         if (bestFitness < tempFitness[j]) {
           index = j;
         }
       }
 
-      // selected candidate stored here
+      // Selected candidate stored here
       parent[k] = temp[index].clone();
     }
 
@@ -196,7 +196,7 @@ class Genetic_Algorithm {
     return child;
   }
 
-  // Replace the old population with the new generation using general replacement
+  // Survivor selection using general replacement
   static double[][] generalReplacement(double[][] oldPopulation, double[][] newPopulation, double[] fitness) {
     double maxFitness = fitness[0];
     int idx = 0;
@@ -209,8 +209,7 @@ class Genetic_Algorithm {
       }
     }
 
-    // chromosome with best fitness value from old population copied 8 times to new
-    // population with different placement
+    // chromosome with best fitness value from old population copied 8 times to the new population with different placement
     for (int j = 0; j < 8; j++) {
       int random = rand.nextInt(fitness.length);
       newPopulation[random] = oldPopulation[idx].clone();
@@ -227,7 +226,8 @@ class Genetic_Algorithm {
     // printPopulation(population, chromosomeSize, fitness);
 
     for (int i = 0; i < maxGeneration; i++) {
-      System.out.println("Generasi Ke-" + i);
+      System.out.print("Generasi Ke-");
+      System.out.println(i + 1);
 
       fitness = allFitness(population);
       // printPopulation(population, chromosomeSize, fitness);
